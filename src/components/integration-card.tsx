@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, HelpCircle } from "lucide-react";
+import { Modal } from "@/components/ui/modal";
 
 type IntegrationStatus = "active" | "configure" | "coming_soon";
 
@@ -12,6 +13,7 @@ export type IntegrationCardProps = {
   description: string;
   status: IntegrationStatus;
   children?: React.ReactNode;
+  helpContent?: React.ReactNode;
 };
 
 export function IntegrationCard({
@@ -20,13 +22,20 @@ export function IntegrationCard({
   description,
   status,
   children,
+  helpContent,
 }: IntegrationCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const isComingSoon = status === "coming_soon";
 
   const toggleExpand = () => {
     if (isComingSoon || !children) return;
     setExpanded((prev) => !prev);
+  };
+
+  const handleHelpClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsHelpOpen(true);
   };
 
   return (
@@ -80,16 +89,48 @@ export function IntegrationCard({
             {description}
           </p>
         </div>
-        {!isComingSoon && children && (
-          <div className="text-slate-400 shrink-0 mt-1">
-            {expanded ? (
-              <ChevronUp className="h-5 w-5" />
-            ) : (
-              <ChevronDown className="h-5 w-5" />
-            )}
-          </div>
-        )}
+        <div className="text-slate-400 shrink-0 mt-1 flex items-center gap-1">
+          {helpContent && (
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={handleHelpClick}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsHelpOpen(true);
+                }
+              }}
+              className="p-1 rounded-md text-slate-400 hover:text-brand-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title="Configurar integração"
+            >
+              <HelpCircle className="h-5 w-5" />
+            </div>
+          )}
+          {!isComingSoon && children && (
+            <div className="p-1">
+              {expanded ? (
+                <ChevronUp className="h-5 w-5" />
+              ) : (
+                <ChevronDown className="h-5 w-5" />
+              )}
+            </div>
+          )}
+        </div>
       </button>
+
+      {/* Modal de Ajuda */}
+      {helpContent && (
+        <Modal
+          open={isHelpOpen}
+          onClose={() => setIsHelpOpen(false)}
+          title={`Configurar ${name}`}
+          maxWidth="max-w-2xl"
+        >
+          {helpContent}
+        </Modal>
+      )}
 
       {/* Expandable Content */}
       {expanded && !isComingSoon && children && (
