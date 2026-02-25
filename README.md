@@ -2,6 +2,8 @@
 
 CRM web para pequenas equipes comerciais organizarem contatos, negócios, tarefas e lembretes em um único lugar.
 
+![Preview do CRM](.github/preview.jpg)
+
 ## Para quem é este projeto
 
 - Pequenas empresas B2B/B2C que vendem por relacionamento
