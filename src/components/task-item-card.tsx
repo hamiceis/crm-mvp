@@ -41,6 +41,7 @@ type TaskItemCardProps = {
     priority: string;
   };
   overdue: boolean;
+  dueToday: boolean;
   dueLabel: string;
 };
 
@@ -62,7 +63,29 @@ const priorityConfig: Record<string, { label: string; className: string }> = {
   },
 };
 
-export function TaskItemCard({ task, overdue, dueLabel }: TaskItemCardProps) {
+const getCardBackground = (
+  status: string,
+  overdue: boolean,
+  dueToday: boolean,
+) => {
+  if (status === "DONE") {
+    return "bg-emerald-600/50 border-emerald-600 dark:bg-emerald-600/20 dark:border-emerald-600/50";
+  }
+  if (overdue) {
+    return "bg-rose-50 border-rose-200 dark:bg-rose-950/30 dark:border-rose-800/50";
+  }
+  if (dueToday) {
+    return "bg-amber-50 border-amber-200 dark:bg-amber-950/30 dark:border-amber-800/50";
+  }
+  return "bg-white border-slate-100 dark:bg-slate-900/40 dark:border-slate-800";
+};
+
+export function TaskItemCard({
+  task,
+  overdue,
+  dueToday,
+  dueLabel,
+}: TaskItemCardProps) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -102,9 +125,7 @@ export function TaskItemCard({ task, overdue, dueLabel }: TaskItemCardProps) {
         onClick={() => setOpen(true)}
         className={cn(
           "group overflow-hidden rounded-xl border p-3.5 shadow-sm transition-all hover:border-brand-300 hover:shadow-md cursor-pointer flex flex-col justify-between",
-          task.status === "DONE"
-            ? "bg-emerald-600/50 border-emerald-600 dark:bg-emerald-600/20 dark:border-emerald-600/50"
-            : "bg-white border-slate-100 dark:bg-slate-900/40 dark:border-slate-800",
+          getCardBackground(task.status, overdue, dueToday),
         )}
       >
         <div className="flex items-start justify-between gap-3 mb-2">

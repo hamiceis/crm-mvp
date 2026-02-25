@@ -16,7 +16,10 @@ function resolveLocale(dateFormat?: string | null) {
   return dateFormat === "en-US" ? "en-US" : "pt-BR";
 }
 
-export function formatDateTime(value?: Date | string | null, options?: DateFormatOptions) {
+export function formatDateTime(
+  value?: Date | string | null,
+  options?: DateFormatOptions,
+) {
   const emptyLabel = options?.emptyLabel ?? "Sem lembrete";
   if (!value) return emptyLabel;
   const date = value instanceof Date ? value : new Date(value);
@@ -28,7 +31,7 @@ export function formatDateTime(value?: Date | string | null, options?: DateForma
   return new Intl.DateTimeFormat(locale, {
     dateStyle: "short",
     timeStyle: "short",
-    ...(timezone ? { timeZone: timezone } : {})
+    ...(timezone ? { timeZone: timezone } : {}),
   }).format(date);
 }
 
@@ -41,6 +44,19 @@ export function isOverdueDate(value?: Date | string | null, now = new Date()) {
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return false;
   return date < now;
+}
+
+export function isDueTodayDate(value?: Date | string | null, now = new Date()) {
+  if (!value) return false;
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return false;
+
+  const startOfDay = new Date(now);
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date(now);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  return date >= startOfDay && date <= endOfDay;
 }
 
 export function getDefaultDateInputValue() {

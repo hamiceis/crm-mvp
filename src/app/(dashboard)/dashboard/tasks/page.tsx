@@ -6,7 +6,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TaskItemCard } from "@/components/task-item-card";
 import { cn } from "@/lib/utils";
 import { CreateTaskModal } from "@/components/create-task-modal";
-import { formatDateTime, isOverdueDate, type UserDateFormat } from "@/lib/date";
+import {
+  formatDateTime,
+  isOverdueDate,
+  isDueTodayDate,
+  type UserDateFormat,
+} from "@/lib/date";
 import { ToastFromQuery } from "@/components/toast-from-query";
 import { Pagination } from "@/components/pagination";
 import Link from "next/link";
@@ -64,7 +69,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
     1,
     Number(typeof params?.page === "string" ? params.page : "1") || 1,
   );
-  const pageSize = 12;
+  const pageSize = 6;
 
   const now = new Date();
   const startOfDay = new Date(now);
@@ -211,12 +216,17 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
               const dueAt = task.dueAt ? new Date(task.dueAt) : null;
               const overdue =
                 task.status === "OPEN" && isOverdueDate(dueAt, now);
+              const dueToday =
+                task.status === "OPEN" &&
+                !overdue &&
+                isDueTodayDate(dueAt, now);
 
               return (
                 <TaskItemCard
                   key={task.id}
                   task={task}
                   overdue={Boolean(overdue)}
+                  dueToday={Boolean(dueToday)}
                   dueLabel={formatDateTime(dueAt, {
                     dateFormat: settings?.dateFormat,
                     timezone: settings?.timezone,
