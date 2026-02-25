@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  min-height: 100vh;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+@layer base {
+  :root {
+    --background: 210 40% 98%; /* #F8FAFC */
+    --foreground: 222 47% 11%; /* #0F172A */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 76% 48%; /* #1D4ED8 */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 214 32% 95%; /* #EEF2F7 */
+    --secondary-foreground: 215 25% 27%; /* #475569 */
+    --muted: 214 32% 95%; /* #EEF2F7 */
+    --muted-foreground: 215 25% 27%; /* #475569 */
+    --accent: 199 89% 48%; /* #0EA5E9 */
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%; /* #EF4444 */
+    --destructive-foreground: 0 0% 98%;
+    --border: 214 32% 91%; /* #E2E8F0 */
+    --input: 214 32% 95%; /* #EEF2F7 */
+    --ring: 221 76% 48%;
+    --chart-1: 221 76% 48%;
+    --chart-2: 199 89% 48%;
+    --chart-3: 160 84% 39%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 0 84% 60%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 222 47% 11%; /* azul escuro */
+    --foreground: 210 40% 98%;
+    --card: 222 42% 14%;
+    --card-foreground: 0 0% 98%;
+    --popover: 222 42% 14%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 217 33% 18%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 199 89% 48%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 217 24% 27%;
+    --input: 217 24% 27%;
+    --ring: 240 4.9% 83.9%;
+    --chart-1: 221 83% 53%;
+    --chart-2: 199 89% 48%;
+    --chart-3: 160 84% 39%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 0 84% 60%;
+  }
+}
+
+/* ── Minimalist Scrollbar (global) ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+*:hover {
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+/* WebKit (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+}
+*:hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}

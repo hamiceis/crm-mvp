@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Enums ──────────────────────────────────
+
+enum Role {
+  ADMIN
+  SALES
+}
+
+enum DealStage {
+  LEAD
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum TaskStatus {
+  OPEN
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+// ── Models ─────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(SALES)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  companyId    String
+
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  tasks         Task[]
+  ownedContacts Contact[]
+  ownedDeals    Deal[]
+  settings      UserSettings?
+  auditLogs     AuditLog[]
+}
+
+model Company {
+  id         String     @id @default(cuid())
+  name       String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  users      User[]
+  contacts   Contact[]
+  deals      Deal[]
+  tasks      Task[]
+  activities Activity[]
+  auditLogs  AuditLog[]
+}
+
+model Contact {
+  id          String   @id @default(cuid())
+  name        String
+  email       String?
+  phone       String?
+  company     String?
+  source      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  companyId   String
+  ownerUserId String?
+
+  ownerCompany Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  deals        Deal[]
+  activities   Activity[]
+  tasks        Task[]
+  ownerUser    User?      @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, createdAt])
+  @@index([companyId, ownerUserId])
+  @@index([companyId, source])
+}
+
+model Deal {
+  id          String    @id @default(cuid())
+  title       String
+  value       Int
+  stage       DealStage @default(LEAD)
+  closeDate   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  companyId   String
+  contactId   String?
+  ownerUserId String?
+
+  ownerCompany Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contact      Contact?   @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  activities   Activity[]
+  tasks        Task[]
+  ownerUser    User?      @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, createdAt])
+  @@index([companyId, ownerUserId])
+  @@index([companyId, stage])
+}
+
+model Activity {
+  id        String    @id @default(cuid())
+  type      String
+  note      String
+  dueDate   DateTime?
+  createdAt DateTime  @default(now())
+  companyId String
+  contactId String?
+  dealId    String?
+
+  ownerCompany Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contact      Contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  deal         Deal?    @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, createdAt])
+}
+
+model Task {
+  id             String       @id @default(cuid())
+  title          String
+  note           String?
+  dueAt          DateTime?
+  reminderSentAt DateTime?
+  status         TaskStatus   @default(OPEN)
+  priority       TaskPriority @default(MEDIUM)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  companyId      String
+  assignedToId   String?
+  contactId      String?
+  dealId         String?
+
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  assignedTo User?    @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  contact    Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  deal       Deal?    @relation(fields: [dealId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, status, dueAt])
+  @@index([companyId, assignedToId])
+}
+
+model UserSettings {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  timezone          String   @default("America/Sao_Paulo")
+  dateFormat        String   @default("pt-BR")
+  themePreference   String   @default("system")
+  whatsappReminders Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  companyId String
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, createdAt])
+  @@index([companyId, entity, createdAt])
+}
