@@ -1,5 +1,14 @@
 import { auth } from "@/lib/auth";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { IntegrationCard } from "@/components/integration-card";
+import {
+  IconWhatsApp,
+  IconWebhook,
+  IconGoogleCalendar,
+  IconEmail,
+  IconZapier,
+  IconSlack,
+  IconGoogleSheets,
+} from "@/components/integration-icons";
 
 export const dynamic = "force-dynamic";
 
@@ -7,128 +16,181 @@ export default async function IntegrationsPage() {
   const session = await auth();
 
   return (
-    <main className="space-y-4">
-      <Card>
-        <CardContent>
-          <CardTitle>Integrações</CardTitle>
-          <p className="mt-2 text-sm text-slate-600">
-            Use o endpoint abaixo para integrar formulários de site, automações
-            (Zapier/Make/n8n) ou qualquer sistema externo e criar leads
-            automaticamente no CRM.
-          </p>
-        </CardContent>
-      </Card>
+    <main className="space-y-8 pb-8">
+      <header className="px-1">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+          Hub de Integrações
+        </h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          Conecte seus aplicativos favoritos ao CRM para centralizar informações
+          e automatizar fluxos de trabalho.
+        </p>
+      </header>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <Card className="space-y-3">
-          <CardContent>
-            <CardTitle className="text-base">Webhook/API de Leads</CardTitle>
-            <p className="text-sm text-slate-600">Endpoint:</p>
-            <code className="block rounded-xl bg-slate-900 px-3 py-2 text-xs text-slate-100 break-all">
-              POST /api/integrations/lead
-            </code>
+      {/* Categoria: Automação */}
+      <section className="space-y-4">
+        <h2 className="px-1 text-lg font-semibold text-slate-800 dark:text-slate-200">
+          Automação
+        </h2>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <IntegrationCard
+            name="API de Leads / Webhook"
+            description="Crie leads automaticamente no CRM a partir de landing pages, formulários ou qualquer sistema externo."
+            icon={<IconWebhook className="h-6 w-6" />}
+            status="active"
+          >
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Endpoint:
+                </p>
+                <code className="mt-1 block rounded-lg bg-white p-3 text-xs text-slate-600 border border-slate-200 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 break-all select-all">
+                  POST /api/integrations/lead
+                </code>
+              </div>
 
-            <p className="mt-3 text-sm text-slate-600">Header obrigatório:</p>
-            <code className="block rounded-xl bg-slate-900 px-3 py-2 text-xs text-slate-100 break-all">
-              x-api-key: INTEGRATION_API_KEY
-            </code>
-            <code className="mt-2 block rounded-xl bg-slate-900 px-3 py-2 text-xs text-slate-100 break-all">
-              x-company-id: COMPANY_ID
-            </code>
+              <div>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Headers Obrigatórios:
+                </p>
+                <div className="mt-1 space-y-2">
+                  <code className="block rounded-lg bg-white p-3 text-xs text-slate-600 border border-slate-200 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 select-all">
+                    x-api-key: INTEGRATION_API_KEY
+                  </code>
+                  <code className="block rounded-lg bg-white p-3 text-xs text-slate-600 border border-slate-200 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 select-all">
+                    x-company-id: COMPANY_ID
+                  </code>
+                </div>
+              </div>
 
-            <p className="mt-3 text-sm text-slate-600">Body JSON:</p>
-            <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-xl bg-slate-900 p-3 text-xs text-slate-100">
-              {`{
-  "name": "Maria Silva",
-  "email": "maria@empresa.com",
-  "phone": "+55 11 99999-0000",
-  "company": "Empresa X",
-  "source": "Landing Page",
-  "dealTitle": "Plano Profissional",
-  "dealValue": 3500,
-  "stage": "LEAD"
-}`}
-            </pre>
-          </CardContent>
-        </Card>
-
-        <Card className="space-y-3">
-          <CardContent>
-            <CardTitle className="text-base">Exemplo com cURL</CardTitle>
-            <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-xl bg-slate-900 p-3 text-xs text-slate-100">
-              {`curl -X POST http://localhost:3000/api/integrations/lead \\
+              <div>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Exemplo cURL:
+                </p>
+                <pre className="mt-1 overflow-x-auto whitespace-pre-wrap break-words rounded-lg bg-slate-900 p-4 text-xs text-slate-300 dark:bg-slate-950">
+                  {`curl -X POST http://localhost:3000/api/integrations/lead \\
   -H "Content-Type: application/json" \\
   -H "x-api-key: SUA_CHAVE" \\
   -H "x-company-id: SUA_COMPANY_ID" \\
   -d '{
     "name":"Lead teste",
     "email":"lead@teste.com",
-    "source":"Zapier",
-    "dealTitle":"Plano Enterprise",
-    "dealValue":12000
+    "source":"Website",
+    "dealTitle":"Plano Profissional",
+    "dealValue":3500
   }'`}
-            </pre>
+                </pre>
+              </div>
+              <ul className="text-xs text-slate-500 space-y-1 list-disc list-inside mt-2">
+                <li>Rate limit: 60 req/min por IP + company.</li>
+                <li>Sua conta atual: {session?.user.email}</li>
+              </ul>
+            </div>
+          </IntegrationCard>
 
-            <p className="text-sm text-slate-600">
-              O lead é criado como contato e, se enviar <code>dealTitle</code>,
-              também cria um negócio automaticamente.
-            </p>
-            <p className="text-xs text-slate-500">
-              Rate limit: 60 req/min por IP + company.
-            </p>
-            <p className="text-xs text-slate-500">
-              Conta logada: {session?.user.email}
-            </p>
-          </CardContent>
-        </Card>
+          <IntegrationCard
+            name="Zapier / Make / n8n"
+            description="Conecte seu CRM a mais de 5.000 aplicativos usando ferramentas de automação visual no-code."
+            icon={<IconZapier className="h-6 w-6" />}
+            status="coming_soon"
+          />
+        </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <Card className="space-y-3">
-          <CardContent>
-            <CardTitle className="text-base">
-              Lembretes de tarefas via WhatsApp
-            </CardTitle>
-            <p className="text-sm text-slate-600">Endpoint:</p>
-            <code className="block rounded-xl bg-slate-900 px-3 py-2 text-xs text-slate-100 break-all">
-              POST /api/integrations/tasks/reminders
-            </code>
+      {/* Categoria: Comunicação */}
+      <section className="space-y-4">
+        <h2 className="px-1 text-lg font-semibold text-slate-800 dark:text-slate-200">
+          Comunicação
+        </h2>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <IntegrationCard
+            name="WhatsApp Lembretes"
+            description="Dispare lembretes proativos de tarefas pendentes e follow-ups atrasados diretamente para o WhatsApp do responsável."
+            icon={<IconWhatsApp className="h-6 w-6" />}
+            status="active"
+          >
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Endpoint (Job / Cron):
+                </p>
+                <code className="mt-1 block rounded-lg bg-white p-3 text-xs text-slate-600 border border-slate-200 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 break-all select-all">
+                  POST /api/integrations/tasks/reminders
+                </code>
+              </div>
 
-            <p className="mt-3 text-sm text-slate-600">Header obrigatório:</p>
-            <code className="block rounded-xl bg-slate-900 px-3 py-2 text-xs text-slate-100 break-all">
-              x-run-key: REMINDER_RUN_KEY
-            </code>
-            <code className="mt-2 block rounded-xl bg-slate-900 px-3 py-2 text-xs text-slate-100 break-all">
-              x-company-id: COMPANY_ID
-            </code>
+              <div>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Como funciona:
+                </p>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                  Configure este endpoint no agendador de tarefas do seu
+                  servidor (cron) ou na Vercel para rodar a cada 5 a 15 minutos.
+                  Ele buscará as tarefas atrasadas ainda não notificadas e
+                  enviará a mensagem.
+                </p>
+              </div>
 
-            <p className="mt-3 text-sm text-slate-600">
-              Esse endpoint busca tarefas vencidas e abertas, envia alerta por
-              WhatsApp e marca com <code>reminderSentAt</code> para evitar
-              duplicidade.
-            </p>
-          </CardContent>
-        </Card>
+              <div>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Headers Obrigatórios:
+                </p>
+                <div className="mt-1 space-y-2">
+                  <code className="block rounded-lg bg-white p-3 text-xs text-slate-600 border border-slate-200 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 select-all">
+                    x-run-key: REMINDER_RUN_KEY
+                  </code>
+                  <code className="block rounded-lg bg-white p-3 text-xs text-slate-600 border border-slate-200 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 select-all">
+                    x-company-id: COMPANY_ID
+                  </code>
+                </div>
+              </div>
+            </div>
+          </IntegrationCard>
 
-        <Card className="space-y-3">
-          <CardContent>
-            <CardTitle className="text-base">
-              Exemplo de execução (cron)
-            </CardTitle>
-            <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-xl bg-slate-900 p-3 text-xs text-slate-100">
-              {`curl -X POST http://localhost:3000/api/integrations/tasks/reminders \\
-  -H "x-run-key: SUA_REMINDER_RUN_KEY" \\
-  -H "x-company-id: SUA_COMPANY_ID"`}
-            </pre>
-            <p className="text-sm text-slate-600">
-              Recomenda-se rodar a cada 5 minutos no cron do seu servidor ou no
-              agendador do provedor.
-            </p>
-            <p className="text-xs text-slate-500">
-              Rate limit: 12 req/min por IP + company.
-            </p>
-          </CardContent>
-        </Card>
+          <IntegrationCard
+            name="E-mail / SMTP"
+            description="Sincronize sua caixa de entrada, registre trocas de e-mail automaticamente no histórico do contato e crie campanhas."
+            icon={<IconEmail className="h-6 w-6" />}
+            status="coming_soon"
+          />
+        </div>
+      </section>
+
+      {/* Categoria: Produtividade */}
+      <section className="space-y-4">
+        <h2 className="px-1 text-lg font-semibold text-slate-800 dark:text-slate-200">
+          Produtividade
+        </h2>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <IntegrationCard
+            name="Google Calendar"
+            description="Sincronize suas tarefas e reuniões agendadas no CRM diretamente com sua agenda."
+            icon={<IconGoogleCalendar className="h-6 w-6" />}
+            status="coming_soon"
+          />
+
+          <IntegrationCard
+            name="Google Sheets"
+            description="Exporte automaticamente os leads, relatórios de pipeline e contatos para planilhas da equipe."
+            icon={<IconGoogleSheets className="h-6 w-6" />}
+            status="coming_soon"
+          />
+        </div>
+      </section>
+
+      {/* Categoria: Notificações */}
+      <section className="space-y-4">
+        <h2 className="px-1 text-lg font-semibold text-slate-800 dark:text-slate-200">
+          Notificações Internas
+        </h2>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <IntegrationCard
+            name="Slack"
+            description="Receba alertas instantâneos no canal de vendas quando um lead qualificado for gerado ou um negócio for fechado."
+            icon={<IconSlack className="h-6 w-6" />}
+            status="coming_soon"
+          />
+        </div>
       </section>
     </main>
   );
