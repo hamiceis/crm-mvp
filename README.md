@@ -47,7 +47,7 @@ No uso diário, o CRM resolve 4 dores principais:
 - Next.js 15 (App Router)
 - TypeScript (strict)
 - Tailwind CSS
-- Prisma + SQLite
+- Prisma + Postgres
 - NextAuth (credenciais)
 - Server Actions
 - Componentes UI no padrão shadcn (base local + Radix/DayPicker onde aplicável)
